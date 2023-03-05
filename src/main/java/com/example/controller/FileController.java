@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,6 +66,7 @@ public class FileController {
       String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         log.info("Getting Reader object");
+        waitForTimeout(reader, process);
 //        String line;
         reader.lines().map(this::appendResult).forEach(output::append);
 //        while ((line = reader.readLine()) != null) {
@@ -91,5 +93,25 @@ public class FileController {
 
   private String appendResult(String data) {
     return String.format("%s%s", data, System.lineSeparator());
+  }
+
+  private void waitForTimeout(BufferedReader input, Process process) throws IOException, InterruptedException {
+    int timeout = 5;
+    while (timeout > 0) {
+      if (!process.isAlive() || input.ready()) {
+        break;
+      } else {
+        timeout--;
+        Thread.sleep(1000);
+        if (timeout == 0 && !input.ready()) {
+          destroyProcess(process);
+          throw new InterruptedException("Timeout in executing the command ");
+        }
+      }
+    }
+  }
+
+  private void destroyProcess(Process process) {
+    process.destroy();
   }
 }
