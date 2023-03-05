@@ -6,9 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -68,15 +65,16 @@ public class FileController {
       log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
-      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        log.info("Getting Reader object: {}", reader.ready());
-        reader.lines().map(this::appendResult).forEach(output::append);
+      try (var reader = process.getInputStream()) {
+        log.info("Getting Reader object");
+        result = new String(reader.readAllBytes());
+//        reader.lines().map(this::appendResult).forEach(output::append);
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
           log.info("Finished");
-          result = output.toString();
+//          result = output.toString();
         } else {
           log.debug("Error...");
-          result = "";
+//          result = "";
         }
 //        String line;
 //        while ((line = reader.readLine()) != null) {
