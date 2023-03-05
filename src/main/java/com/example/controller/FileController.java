@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.model.FileAttribute;
+import com.example.process.StreamGobbler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -32,17 +35,16 @@ public class FileController {
   @GetMapping("/exec")
   public String exec() {
     try {
-      var path = ResourceUtils.getFile("classpath:scripts/file-script.sh").toPath().toString();
-      log.info("Shell script path: {}", path);
-      String[] cmd = { "bash", "-c", path + " /var/local/test.txt /var/local/output1.txt" };
-      log.info("Executing shell script");
-      var process = Runtime.getRuntime().exec(cmd);
+      var process = Runtime.getRuntime().exec("/bin/sh -c sudo ausearch -f /var/local/test.txt -i");
+      var streamGobbler = new StreamGobbler(process.getInputStream(), log::info);
+      Future<?> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
       if (process.waitFor() == 0) {
         log.info("Executed");
         Files.readAllLines(Path.of("/var/local/output1.txt")).forEach(log::info);
       } else {
         log.error("Failed");
       }
+      log.info("{}", future.isDone());
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
       Thread.currentThread().interrupt();
