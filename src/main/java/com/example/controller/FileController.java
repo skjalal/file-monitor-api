@@ -26,16 +26,6 @@ public class FileController {
     return Stream.of(filePath.split(";")).map(this::buildAttr).toList();
   }
 
-  @GetMapping("/exec")
-  public String exec(@RequestParam String filePath) {
-    try {
-      return execute("stat %s".formatted(filePath));
-    } catch (Exception e) {
-      log.error("Failed to run command", e);
-    }
-    return "ERROR";
-  }
-
   private FileAttribute buildAttr(String filePath) {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
@@ -75,6 +65,7 @@ public class FileController {
         String line;
         while ((line = reader.readLine()) != null) {
           output.append(line).append("\n");
+          log.info(line);
         }
         int exitVal = process.waitFor();
         log.info("exit value: {}", exitVal);
