@@ -68,14 +68,13 @@ public class FileController {
       log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
-      process.waitFor();
-//      CompletableFuture.runAsync(() -> {
-//        try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-//          fetchErrorResult(reader);
-//        } catch (Exception e) {
-//          log.error("Failed to execute error stream", e);
-//        }
-//      });
+      CompletableFuture.runAsync(() -> {
+        try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+          fetchErrorResult(reader);
+        } catch (Exception e) {
+          log.error("Failed to execute error stream", e);
+        }
+      });
       CompletableFuture.runAsync(() -> {
         try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
           log.info("Getting Reader object: {}", reader.ready());
@@ -85,7 +84,7 @@ public class FileController {
         }
       });
 
-      if (process.waitFor(5L, TimeUnit.SECONDS)) {
+      if (process.waitFor() == 0) {
         log.info("Finished");
         result = output.toString();
       } else {
@@ -107,7 +106,7 @@ public class FileController {
       log.info("Getting Error Reader object: {}", reader.ready());
       reader.lines().map(this::appendResult).forEach(log::info);
     } catch (Exception e) {
-      log.error("Failed to fetch data", e);
+      log.error("Failed to fetch error data", e);
     }
   }
 
