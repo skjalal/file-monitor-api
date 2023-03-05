@@ -66,21 +66,20 @@ public class FileController {
       String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         log.info("Getting Reader object");
-        waitForTimeout(reader, process);
-//        String line;
-        reader.lines().map(this::appendResult).forEach(output::append);
-//        while ((line = reader.readLine()) != null) {
-//          output.append(line).append(System.lineSeparator());
-//          log.info(line);
-//        }
-        log.info("Waiting for process to end");
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
-          log.info("Finished ...");
+          reader.lines().map(this::appendResult).forEach(output::append);
+          log.info("Finished");
           result = output.toString();
         } else {
           log.debug("Error...");
           result = "";
         }
+//        String line;
+//        while ((line = reader.readLine()) != null) {
+//          output.append(line).append(System.lineSeparator());
+//          log.info(line);
+//        }
+
       }
       log.info("Result: {}", result);
       return result;
@@ -93,28 +92,5 @@ public class FileController {
 
   private String appendResult(String data) {
     return String.format("%s%s", data, System.lineSeparator());
-  }
-
-  private void waitForTimeout(BufferedReader input, Process process) throws IOException, InterruptedException {
-    int timeout = 5;
-    while (timeout > 0) {
-      if (!process.isAlive() || input.ready()) {
-        log.info("Alive");
-        break;
-      } else {
-        timeout--;
-        log.info("Not Aive ...");
-        TimeUnit.MILLISECONDS.sleep(1000L);
-        if (timeout == 0 && !input.ready()) {
-          log.error("Dead");
-          destroyProcess(process);
-          throw new InterruptedException("Timeout in executing the command ");
-        }
-      }
-    }
-  }
-
-  private void destroyProcess(Process process) {
-    process.destroy();
   }
 }
