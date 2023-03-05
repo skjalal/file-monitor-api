@@ -60,18 +60,21 @@ public class FileController {
     try {
       log.info("Executing command: {}", command);
       var process = Runtime.getRuntime().exec(command);
+      log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        log.info("Getting Reader object");
         String line;
         while ((line = reader.readLine()) != null) {
           output.append(line).append(System.lineSeparator());
           log.info(line);
         }
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
+          log.info("Finished ...");
           result = output.toString();
         } else {
-          log.debug("reading...");
+          log.debug("Error...");
           result = "";
         }
       }
