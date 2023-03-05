@@ -103,6 +103,7 @@ public class FileController {
         break;
       } else {
         timeout--;
+        log.info("Not Aive ...");
         TimeUnit.MILLISECONDS.sleep(1000L);
         if (timeout == 0 && !input.ready()) {
           log.error("Dead");
