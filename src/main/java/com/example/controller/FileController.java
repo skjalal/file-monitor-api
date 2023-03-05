@@ -27,9 +27,9 @@ public class FileController {
   }
 
   @GetMapping("/exec")
-  public String exec() {
+  public String exec(@RequestParam String filePath) {
     try {
-      return execute("stat /var/local/test.txt");
+      return execute("stat %s".formatted(filePath));
     } catch (Exception e) {
       log.error("Failed to run command", e);
     }
