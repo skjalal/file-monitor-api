@@ -3,14 +3,10 @@ package com.example.controller;
 import com.example.model.FileAttribute;
 import com.example.process.StreamGobbler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -19,7 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -71,26 +66,8 @@ public class FileController {
       var process = Runtime.getRuntime().exec(command);
       log.info("Prepare process object");
       var streamGobbler = new StreamGobbler(process.getInputStream());
-      Future<String> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
-      process.waitFor(5L, TimeUnit.SECONDS);
+      var future = Executors.newSingleThreadExecutor().submit(streamGobbler);
       return future.get(5L, TimeUnit.SECONDS);
-//      var output = new StringBuilder();
-//      String result;
-//      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-//        log.info("Getting Reader object: {}", reader.ready());
-//        reader.lines().map(this::appendResult).forEach(output::append);
-//      }
-//
-//      if (process.waitFor() == 0) {
-//        log.info("Finished");
-//        result = output.toString();
-//      } else {
-//        log.debug("Error...");
-//        result = "";
-//      }
-//      log.info("Result: {}", result);
-//      process.destroy();
-//      return result;
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
       Thread.currentThread().interrupt();
