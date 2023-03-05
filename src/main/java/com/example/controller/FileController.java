@@ -71,6 +71,7 @@ public class FileController {
 //          output.append(line).append(System.lineSeparator());
 //          log.info(line);
 //        }
+        log.info("Waiting for process to end");
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
           log.info("Finished ...");
           result = output.toString();
