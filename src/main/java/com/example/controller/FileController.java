@@ -31,7 +31,7 @@ public class FileController {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
     try {
-      var data = Optional.ofNullable(execute("sudo ausearch -f %s -i".formatted(filePath))).orElseThrow();
+      var data = Optional.ofNullable(execute(String.format("sudo ausearch -f %s -i", filePath))).orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
       var path = Path.of(filePath);
       var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
@@ -65,11 +65,12 @@ public class FileController {
       String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         log.info("Getting Reader object");
-        String line;
-        while ((line = reader.readLine()) != null) {
-          output.append(line).append(System.lineSeparator());
-          log.info(line);
-        }
+//        String line;
+        reader.lines().map(this::appendResult).forEach(output::append);
+//        while ((line = reader.readLine()) != null) {
+//          output.append(line).append(System.lineSeparator());
+//          log.info(line);
+//        }
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
           log.info("Finished ...");
           result = output.toString();
@@ -85,5 +86,9 @@ public class FileController {
       Thread.currentThread().interrupt();
     }
     return null;
+  }
+
+  private String appendResult(String data) {
+    return String.format("%s%s", data, System.lineSeparator());
   }
 }
