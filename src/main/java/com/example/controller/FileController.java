@@ -57,8 +57,10 @@ public class FileController {
 
   private String execute(String command) {
     try {
+      log.info("executing command: {}", command);
       var process = Runtime.getRuntime().exec(command);
       var output = new StringBuilder();
+      String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line;
         while ((line = reader.readLine()) != null) {
@@ -67,11 +69,14 @@ public class FileController {
         int exitVal = process.waitFor();
         log.info("exit value: {}", exitVal);
         if (exitVal == 0) {
-          return output.toString();
+          result = output.toString();
         } else {
           log.debug("reading...");
+          result = null;
         }
       }
+      log.info("Result: {}", result);
+      return result;
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
       Thread.currentThread().interrupt();
