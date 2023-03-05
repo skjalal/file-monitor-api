@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -67,9 +68,7 @@ public class FileController {
           output.append(line).append(System.lineSeparator());
           log.info(line);
         }
-        int exitVal = process.waitFor();
-        log.info("exit value: {}", exitVal);
-        if (exitVal == 0) {
+        if (process.waitFor(5L, TimeUnit.SECONDS)) {
           result = output.toString();
         } else {
           log.debug("reading...");
