@@ -68,6 +68,7 @@ public class FileController {
       log.info("Prepare process object");
       var streamGobbler = new StreamGobbler(process.getInputStream());
       var future = Executors.newSingleThreadExecutor().submit(streamGobbler);
+      process.waitFor(5L, TimeUnit.SECONDS);
       return future.get(15L, TimeUnit.SECONDS);
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
