@@ -30,7 +30,7 @@ public class FileController {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
     try {
-      var data = Optional.ofNullable(execute("ausearch -f %s -i | less".formatted(filePath))).orElseThrow();
+      var data = Optional.ofNullable(execute("ausearch -f %s -i".formatted(filePath))).orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
       var path = Path.of(filePath);
       var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
@@ -65,6 +65,7 @@ public class FileController {
           output.append(line).append("\n");
         }
         int exitVal = process.waitFor();
+        log.info("exit value: {}", exitVal);
         if (exitVal == 0) {
           return output.toString();
         } else {
