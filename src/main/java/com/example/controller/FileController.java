@@ -28,6 +28,7 @@ public class FileController {
 
   private FileAttribute buildAttr(String filePath) {
     var fileAttribute = new FileAttribute();
+    log.info("Search for: {}", filePath);
     try {
       var data = Optional.ofNullable(execute("ausearch -f %s -i | less".formatted(filePath))).orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
