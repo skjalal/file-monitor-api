@@ -29,6 +29,11 @@ public class FileController {
     return Stream.of(filePath.split(";")).map(this::buildAttr).toList();
   }
 
+  @GetMapping("/exec")
+  public String exec() {
+    return execute("sudo aureport -f -i --start today");
+  }
+
   private FileAttribute buildAttr(String filePath) {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
