@@ -30,7 +30,7 @@ public class FileController {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
     try {
-      var data = Optional.ofNullable(execute("ausearch -f %s -i".formatted(filePath))).orElseThrow();
+      var data = Optional.ofNullable(execute("sudo ausearch -f %s -i".formatted(filePath))).orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
       var path = Path.of(filePath);
       var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
