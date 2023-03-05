@@ -68,13 +68,14 @@ public class FileController {
       log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
-      CompletableFuture.runAsync(() -> {
-        try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-          fetchErrorResult(reader);
-        } catch (Exception e) {
-          log.error("Failed to execute error stream", e);
-        }
-      });
+      process.waitFor();
+//      CompletableFuture.runAsync(() -> {
+//        try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+//          fetchErrorResult(reader);
+//        } catch (Exception e) {
+//          log.error("Failed to execute error stream", e);
+//        }
+//      });
       CompletableFuture.runAsync(() -> {
         try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
           log.info("Getting Reader object: {}", reader.ready());
