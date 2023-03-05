@@ -84,9 +84,9 @@ public class FileController {
 //          output.append(line).append(System.lineSeparator());
 //          log.info(line);
 //        }
-
       }
       log.info("Result: {}", result);
+      process.destroy();
       return result;
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
