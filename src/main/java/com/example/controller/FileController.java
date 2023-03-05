@@ -26,6 +26,16 @@ public class FileController {
     return Stream.of(filePath.split(";")).map(this::buildAttr).toList();
   }
 
+  @GetMapping("/exec")
+  public String exec() {
+    try {
+      return execute("stat /var/local/test.txt");
+    } catch (Exception e) {
+      log.error("Failed to run command", e);
+    }
+    return "ERROR";
+  }
+
   private FileAttribute buildAttr(String filePath) {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
@@ -57,7 +67,7 @@ public class FileController {
 
   private String execute(String command) {
     try {
-      log.info("executing command: {}", command);
+      log.info("Executing command: {}", command);
       var process = Runtime.getRuntime().exec(command);
       var output = new StringBuilder();
       String result;
