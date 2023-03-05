@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -30,26 +31,6 @@ public class FileController {
   @GetMapping("/")
   public List<FileAttribute> load(@RequestParam String filePath) {
     return Stream.of(filePath.split(";")).map(this::buildAttr).toList();
-  }
-
-  @GetMapping("/exec")
-  public String exec() {
-    try {
-      var process = Runtime.getRuntime().exec("/bin/sh -c sudo ausearch -f /var/local/test.txt -i");
-      var streamGobbler = new StreamGobbler(process.getInputStream(), log::info);
-      Future<?> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
-      if (process.waitFor() == 0) {
-        log.info("Executed");
-        Files.readAllLines(Path.of("/var/local/output1.txt")).forEach(log::info);
-      } else {
-        log.error("Failed");
-      }
-      log.info("{}", future.isDone());
-    } catch (IOException | InterruptedException e) {
-      e.printStackTrace();
-      Thread.currentThread().interrupt();
-    }
-    return "GOOD";
   }
 
   private FileAttribute buildAttr(String filePath) {
@@ -89,42 +70,31 @@ public class FileController {
       log.info("Executing command: {}", command);
       var process = Runtime.getRuntime().exec(command);
       log.info("Prepare process object");
-      var output = new StringBuilder();
-      String result;
-      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        log.info("Getting Reader object: {}", reader.ready());
-        reader.lines().map(this::appendResult).forEach(output::append);
-      } catch (Exception e) {
-        log.error("Failed to execute data stream", e);
-      }
-
-      if (process.waitFor() == 0) {
-        log.info("Finished");
-        result = output.toString();
-      } else {
-        log.debug("Error...");
-        result = "";
-      }
-      log.info("Result: {}", result);
-      process.destroy();
-      return result;
+      var streamGobbler = new StreamGobbler(process.getInputStream());
+      Future<String> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
+      process.waitFor(5L, TimeUnit.SECONDS);
+      return future.get(5L, TimeUnit.SECONDS);
+//      var output = new StringBuilder();
+//      String result;
+//      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+//        log.info("Getting Reader object: {}", reader.ready());
+//        reader.lines().map(this::appendResult).forEach(output::append);
+//      }
+//
+//      if (process.waitFor() == 0) {
+//        log.info("Finished");
+//        result = output.toString();
+//      } else {
+//        log.debug("Error...");
+//        result = "";
+//      }
+//      log.info("Result: {}", result);
+//      process.destroy();
+//      return result;
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
       Thread.currentThread().interrupt();
     }
     return null;
-  }
-
-  private void fetchErrorResult(BufferedReader reader) {
-    try {
-      log.info("Getting Error Reader object: {}", reader.ready());
-      reader.lines().map(this::appendResult).forEach(log::info);
-    } catch (Exception e) {
-      log.error("Failed to fetch error data", e);
-    }
-  }
-
-  private String appendResult(String data) {
-    return String.format("%s%s", data, System.lineSeparator());
   }
 }
