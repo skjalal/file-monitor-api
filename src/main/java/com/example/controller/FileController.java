@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -32,7 +33,10 @@ public class FileController {
     var fileAttribute = new FileAttribute();
     log.info("Search for: {}", filePath);
     try {
-      var data = Optional.ofNullable(execute(String.format("sudo ausearch -f %s -i", filePath))).orElseThrow();
+      var data =
+              Optional.ofNullable(execute(String.format("sudo ausearch -f %s -i", filePath)))
+                      .filter(Predicate.not(String::isEmpty))
+                      .orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
       var path = Path.of(filePath);
       var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
