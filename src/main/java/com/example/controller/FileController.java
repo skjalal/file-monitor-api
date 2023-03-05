@@ -99,11 +99,13 @@ public class FileController {
     int timeout = 5;
     while (timeout > 0) {
       if (!process.isAlive() || input.ready()) {
+        log.info("Alive");
         break;
       } else {
         timeout--;
-        Thread.sleep(1000);
+        TimeUnit.MILLISECONDS.sleep(1000L);
         if (timeout == 0 && !input.ready()) {
+          log.error("Dead");
           destroyProcess(process);
           throw new InterruptedException("Timeout in executing the command ");
         }
