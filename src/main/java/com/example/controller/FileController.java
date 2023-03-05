@@ -64,7 +64,7 @@ public class FileController {
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line;
         while ((line = reader.readLine()) != null) {
-          output.append(line).append("\n");
+          output.append(line).append(System.lineSeparator());
           log.info(line);
         }
         int exitVal = process.waitFor();
