@@ -63,7 +63,8 @@ public class FileController {
   private String execute(String command) {
     try {
       log.info("Executing command: {}", command);
-      var process = Runtime.getRuntime().exec(command);
+      var builder = new ProcessBuilder("bash", "-c", command);
+      var process = builder.start();
       log.info("Prepare process object");
       var streamGobbler = new StreamGobbler(process.getInputStream());
       var future = Executors.newSingleThreadExecutor().submit(streamGobbler);
