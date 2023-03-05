@@ -29,7 +29,7 @@ public class FileController {
   private FileAttribute buildAttr(String filePath) {
     var fileAttribute = new FileAttribute();
     try {
-      var data = Optional.ofNullable(execute("ausearch -f %s".formatted(filePath))).orElseThrow();
+      var data = Optional.ofNullable(execute("ausearch -f %s -i | less".formatted(filePath))).orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
       var path = Path.of(filePath);
       var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
