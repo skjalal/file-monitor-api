@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -67,13 +68,21 @@ public class FileController {
       log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
-      try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-        fetchErrorResult(reader);
-      }
-      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        log.info("Getting Reader object: {}", reader.ready());
-        reader.lines().map(this::appendResult).forEach(output::append);
-      }
+      CompletableFuture.runAsync(() -> {
+        try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+          fetchErrorResult(reader);
+        } catch (Exception e) {
+          log.error("Failed to execute error stream", e);
+        }
+      });
+      CompletableFuture.runAsync(() -> {
+        try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+          log.info("Getting Reader object: {}", reader.ready());
+          reader.lines().map(this::appendResult).forEach(output::append);
+        } catch (Exception e) {
+          log.error("Failed to execute data stream", e);
+        }
+      });
 
       if (process.waitFor(5L, TimeUnit.SECONDS)) {
         log.info("Finished");
