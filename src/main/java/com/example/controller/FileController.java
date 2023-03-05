@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -65,22 +67,20 @@ public class FileController {
       log.info("Prepare process object");
       var output = new StringBuilder();
       String result;
-      try (var reader = process.getInputStream()) {
-        log.info("Getting Reader object");
-        result = new String(reader.readAllBytes());
-//        reader.lines().map(this::appendResult).forEach(output::append);
-        if (process.waitFor(5L, TimeUnit.SECONDS)) {
-          log.info("Finished");
-//          result = output.toString();
-        } else {
-          log.debug("Error...");
-//          result = "";
-        }
-//        String line;
-//        while ((line = reader.readLine()) != null) {
-//          output.append(line).append(System.lineSeparator());
-//          log.info(line);
-//        }
+      try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+        fetchErrorResult(reader);
+      }
+      try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        log.info("Getting Reader object: {}", reader.ready());
+        reader.lines().map(this::appendResult).forEach(output::append);
+      }
+
+      if (process.waitFor(5L, TimeUnit.SECONDS)) {
+        log.info("Finished");
+        result = output.toString();
+      } else {
+        log.debug("Error...");
+        result = "";
       }
       log.info("Result: {}", result);
       process.destroy();
@@ -90,6 +90,15 @@ public class FileController {
       Thread.currentThread().interrupt();
     }
     return null;
+  }
+
+  private void fetchErrorResult(BufferedReader reader) {
+    try {
+      log.info("Getting Error Reader object: {}", reader.ready());
+      reader.lines().map(this::appendResult).forEach(log::info);
+    } catch (Exception e) {
+      log.error("Failed to fetch data", e);
+    }
   }
 
   private String appendResult(String data) {
