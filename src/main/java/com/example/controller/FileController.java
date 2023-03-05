@@ -33,7 +33,7 @@ public class FileController {
     log.info("Search for: {}", filePath);
     try {
       var data =
-              Optional.ofNullable(execute(String.format("sudo ausearch -f %s -i", filePath)))
+              Optional.ofNullable(execute(String.format("ausearch -f %s -i", filePath)))
                       .filter(Predicate.not(String::isEmpty))
                       .orElseThrow();
       var result = data.substring(data.lastIndexOf("type=SYSCALL"));
@@ -68,7 +68,7 @@ public class FileController {
       log.info("Prepare process object");
       var streamGobbler = new StreamGobbler(process.getInputStream());
       var future = Executors.newSingleThreadExecutor().submit(streamGobbler);
-      return future.get(5L, TimeUnit.SECONDS);
+      return future.get(15L, TimeUnit.SECONDS);
     } catch (Exception e) {
       log.error("Failed to execute Linux command", e);
       Thread.currentThread().interrupt();
