@@ -73,7 +73,7 @@ public class FileController {
           result = output.toString();
         } else {
           log.debug("reading...");
-          result = null;
+          result = "";
         }
       }
       log.info("Result: {}", result);
