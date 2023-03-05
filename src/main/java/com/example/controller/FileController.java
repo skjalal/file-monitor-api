@@ -70,7 +70,6 @@ public class FileController {
       String result;
       try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         log.info("Getting Reader object: {}", reader.ready());
-        reader.reset();
         reader.lines().map(this::appendResult).forEach(output::append);
         if (process.waitFor(5L, TimeUnit.SECONDS)) {
           log.info("Finished");
