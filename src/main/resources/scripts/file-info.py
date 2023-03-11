@@ -27,9 +27,6 @@ print('File size: ', os.path.getsize(path))
 
 file_stats = os.stat(path)
 
-print(file_stats)
-
-userinfo = pwd.getpwuid(file_stats.st_uid)
-print(userinfo)
-
 print('Owner: ', pwd.getpwuid(file_stats.st_uid).pw_name)
+
+os.system('sudo ausearch -k test-file -i')
