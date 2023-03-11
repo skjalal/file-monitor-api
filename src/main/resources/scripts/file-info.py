@@ -4,9 +4,8 @@ import pwd
 import subprocess
 import json
 import sys
-from cStringIO import StringIO
 
-path = StringIO(sys.argv[1])
+path = sys.argv[1]
 data = {}
 
 # file modification timestamp of a file
