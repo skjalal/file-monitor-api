@@ -42,4 +42,3 @@ out1 = output[output.rindex("type=SYSCALL"):]
 result = out1[out1.index(" uid="):out1.index("gid")].replace("uid=", "")
 data['lastModifiedBy'] = result.strip()
 print json.dumps(data)
-print ("Command exit status/return code : ", p_status)
