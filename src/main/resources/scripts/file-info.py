@@ -10,7 +10,7 @@ path = r"/var/local/test.txt"
 m_time = os.path.getmtime(path)
 # convert timestamp into DateTime object
 dt_m = datetime.fromtimestamp(m_time)
-print('Modified on:', dt_m)
+print('Modified on:', m_time)
 
 # file creation timestamp in float
 c_time = os.path.getctime(path)
