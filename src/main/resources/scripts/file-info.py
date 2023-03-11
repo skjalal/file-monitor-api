@@ -34,7 +34,7 @@ data['createdBy'] = pwd.getpwuid(file_stats.st_uid).pw_name
 
 fileName = path[path.rindex('/')+1:]
 
-cmd = "sudo ausearch -f ",fileName," -i"
+cmd = "sudo ausearch -f " + fileName +" -i"
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
 p_status = p.wait()
