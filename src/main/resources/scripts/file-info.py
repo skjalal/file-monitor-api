@@ -32,7 +32,7 @@ file_stats = os.stat(path)
 
 data['createdBy'] = pwd.getpwuid(file_stats.st_uid).pw_name
 
-cmd = "sudo ausearch -k test-file -i"
+cmd = "sudo ausearch -f /var/local/test.txt -i"
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
 p_status = p.wait()
