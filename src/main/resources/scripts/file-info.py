@@ -6,10 +6,8 @@ import json
 import sys
 
 
-print "arg1=", sys.argv[1]
+path = sys.argv[1]
 data = {}
-# Path to the file
-path = r"/var/local/test.txt"
 
 # file modification timestamp of a file
 m_time = os.path.getmtime(path)
