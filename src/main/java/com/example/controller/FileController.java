@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -37,7 +38,11 @@ public class FileController {
       try (var pyInterp = new PythonInterpreter()) {
         pyInterp.set("a", filePath);
         pyInterp.execfile(script);
-        var data = Optional.ofNullable(pyInterp.get("output")).map(Object::toString).orElseThrow();
+        var data =
+            Optional.ofNullable(pyInterp.get("output"))
+                .map(Object::toString)
+                .filter(Predicate.not(String::isEmpty))
+                .orElseThrow();
         var result = data.substring(data.lastIndexOf("type=SYSCALL"));
         var path = Path.of(filePath);
         var fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
