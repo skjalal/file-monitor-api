@@ -22,6 +22,7 @@ print("Created on:", dt_c)
 a_time = os.path.getatime(path)
 # convert last access timestamp into DateTime object
 dt_a = datetime.fromtimestamp(a_time)
+print dt_a
 print("Accessed on:", dt_a)
 
 print("File size: ", os.path.getsize(path))
