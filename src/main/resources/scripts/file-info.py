@@ -11,19 +11,19 @@ path = r"/var/local/test.txt"
 # file modification timestamp of a file
 m_time = os.path.getmtime(path)
 # convert timestamp into DateTime object
-dt_m = datetime.fromtimestamp(m_time)
+dt_m = datetime.fromtimestamp(m_time).strftime("%Y-%m-%d %H:%M:%S")
 data['lastModifiedDate'] = dt_m
 
 # file creation timestamp in float
 c_time = os.path.getctime(path)
 # convert creation timestamp into DateTime object
-dt_c = datetime.fromtimestamp(c_time)
+dt_c = datetime.fromtimestamp(c_time).strftime("%Y-%m-%d %H:%M:%S")
 data['createdDate'] = dt_c
 
 # file last access timestamp in float
 a_time = os.path.getatime(path)
 # convert last access timestamp into DateTime object
-dt_a = datetime.fromtimestamp(a_time)
+dt_a = datetime.fromtimestamp(a_time).strftime("%Y-%m-%d %H:%M:%S")
 data['lastAccessedDate'] = dt_a
 
 data['fileSize'] = os.path.getsize(path)
