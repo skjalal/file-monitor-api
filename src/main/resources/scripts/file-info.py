@@ -3,7 +3,10 @@ import os
 import pwd
 import subprocess
 import json
+import sys
 
+
+print "arg1=", sys.argv[0]
 data = {}
 # Path to the file
 path = r"/var/local/test.txt"
@@ -32,7 +35,7 @@ file_stats = os.stat(path)
 
 data['createdBy'] = pwd.getpwuid(file_stats.st_uid).pw_name
 
-cmd = "sudo ausearch -f /var/local/test.txt -i"
+cmd = "sudo ausearch -f test.txt -i"
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
 p_status = p.wait()
