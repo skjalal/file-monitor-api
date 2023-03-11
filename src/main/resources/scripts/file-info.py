@@ -29,7 +29,7 @@ file_stats = os.stat(path)
 
 print(file_stats)
 
-userinfo = pwd.getpwuid(file_stats.st.st_uid)
+userinfo = pwd.getpwuid(file_stats.st_uid)
 print(userinfo)
 
 print('Owner: ', pwd.getpwuid(file_stats.st_uid).pw_name)
