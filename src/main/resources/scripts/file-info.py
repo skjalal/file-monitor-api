@@ -6,7 +6,7 @@ import json
 import sys
 
 
-print "arg1=", sys.argv[0]
+print "arg1=", sys.argv[1]
 data = {}
 # Path to the file
 path = r"/var/local/test.txt"
