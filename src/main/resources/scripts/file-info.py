@@ -34,6 +34,6 @@ cmd = "sudo ausearch -k test-file -i"
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
 p_status = p.wait()
-result = output.rindex("type=SYSCALL").substring(output.indexOf("uid", output.indexOf("uid") + 1), output.indexOf("gid")).replace("uid=", "")
+result = output[output.indexOf("uid", output.indexOf("uid") + 1):output.indexOf("gid")].replace("uid=", "")
 print result
 print "Command exit status/return code : ", p_status
