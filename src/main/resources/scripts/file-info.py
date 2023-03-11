@@ -1,6 +1,7 @@
 import datetime
 import os
 import pwd
+import subprocess
 
 # Path to the file
 path = r"/var/local/test.txt"
@@ -29,4 +30,10 @@ file_stats = os.stat(path)
 
 print('Owner: ', pwd.getpwuid(file_stats.st_uid).pw_name)
 
-os.system('sudo ausearch -k test-file -i')
+cmd = "sudo ausearch -k test-file -i"
+p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+(output, err) = p.communicate()
+p_status = p.wait()
+result = output.rindex("type=SYSCALL").substring(output.indexOf("uid", output.indexOf("uid") + 1), output.indexOf("gid")).replace("uid=", "")
+print result
+print "Command exit status/return code : ", p_status
