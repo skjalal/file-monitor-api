@@ -35,7 +35,6 @@ p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 (output, err) = p.communicate()
 p_status = p.wait()
 out1 = output[output.rindex("type=SYSCALL"):]
-print out1
 result = out1[out1.index(" uid="):out1.index("gid")].replace("uid=", "")
-print result
+print result.strip()
 print "Command exit status/return code : ", p_status
